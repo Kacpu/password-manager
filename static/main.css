@@ -2,8 +2,8 @@
     --main: #D7CAC5;
     --light-main: #F0E9E9;
     --text-main: #000000;
-    --btn-primary: #D19FA0;
-    --btn-primary-hover: #c47172;
+    --btn-primary: #BFA5A5;
+    --btn-primary-hover: #9f8585;
 }
 
 .bg-creamy {
@@ -46,6 +46,10 @@
     border: none;
     color: var(--text-main);
     box-shadow: none;
+}
+
+.table>:not(:first-child) {
+    border-top: 2px solid #BCB5B5;
 }
 
 
