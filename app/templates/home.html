@@ -4,17 +4,17 @@
       <thead >
         <tr>
           <th scope="col">ID</th>
-          <th scope="col">App name</th>
+          <th scope="col">Service</th>
           <th scope="col">Password</th>
           <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
-        {% for item in items %}
+        {% for service in services %}
           <tr>
-            <td>{{ item.id }}</td>
-            <td>{{ item.app_name }}</td>
-            <td>{{ item.password }}</td>
+            <td>{{ service.id }}</td>
+            <td>{{ service.name }}</td>
+            <td>{{ service.password }}</td>
             <td>
               <button class="btn btn-primary btn-sm">Show password</button>
             </td>
