@@ -10,20 +10,45 @@
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
-    <title>Hello, world!</title>
+    <title>Password Manager</title>
   </head>
+
   <body class="bg-light-creamy">
+
     <nav class="navbar navbar-expand-md bg-creamy nav-shadow">
       <div class="container-fluid">
         <span class="navbar-brand mb-0">Password Manager</span>
         <div class="navbar-nav">
           <span class="navbar-text me-3 text-creamy">
-            Username
+            {{ username }}
           </span>
           <a class="logout nav-link px-0" href="#">Logout</a>
         </div>
       </div>
     </nav>
+
+    <table class="table table-hover mt-4">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">App name</th>
+          <th scope="col">Password</th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.app_name }}</td>
+            <td>{{ item.password }}</td>
+            <td>
+              <button class="btn btn-primary btn-sm">Show password</button>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
 
     <!-- Optional JavaScript; choose one of the two! -->

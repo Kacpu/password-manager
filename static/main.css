@@ -2,6 +2,8 @@
     --main: #D7CAC5;
     --light-main: #F0E9E9;
     --text-main: #000000;
+    --btn-primary: #D19FA0;
+    --btn-primary-hover: #c47172;
 }
 
 .bg-creamy {
@@ -32,4 +34,19 @@
 .nav-shadow {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
+
+.btn-primary {
+    background: var(--btn-primary);
+    border: none;
+    color: var(--text-main);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background: var(--btn-primary-hover);
+    border: none;
+    color: var(--text-main);
+    box-shadow: none;
+}
+
+
 
