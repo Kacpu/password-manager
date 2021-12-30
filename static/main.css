@@ -1,0 +1,35 @@
+:root {
+    --main: #D7CAC5;
+    --light-main: #F0E9E9;
+    --text-main: #000000;
+}
+
+.bg-creamy {
+    background: var(--main);
+    color: var(--text-main);
+}
+
+.bg-light-creamy {
+    background: var(--light-main);
+}
+
+.nav-link, .nav-link:visited {
+    color: var(--text-main);
+}
+
+.nav-link:hover {
+    color: var(--text-main);
+}
+
+.logout.nav-link {
+    color: #5C5656;
+}
+
+.logout.nav-link:hover {
+    color: black;
+}
+
+.nav-shadow {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
