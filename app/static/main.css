@@ -5,6 +5,16 @@
     --btn-primary: #BFA5A5;
     --btn-primary-hover: #9f8585;
     --table: #BCB5B5;
+    --confirm: #B4B596;
+    --confirm-hover: #c5c6a5;
+}
+
+.bg-confirm.btn-primary {
+    background: var(--confirm);
+}
+
+.bg-confirm.btn-primary:hover {
+    background: var(--confirm-hover);
 }
 
 .bg-creamy {
@@ -53,8 +63,13 @@
     border-top: 2px solid var(--table);
 }
 
-.table {
+.register-form {
+    margin-top: 50px;
+    padding-left: 200px;
+    padding-right: 200px;
 }
+
+
 
 
 
