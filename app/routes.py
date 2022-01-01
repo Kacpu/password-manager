@@ -1,14 +1,15 @@
 from app import app
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, flash
 from app.models import Service, User
 from app.forms import RegisterForm
 from app import db
+
+username = ''
 
 
 @app.route('/')
 @app.route('/home')
 def home_page():
-    username = 'Kacper'
     services = Service.query.all()
     return render_template('home.html', username=username, services=services)
 
@@ -23,6 +24,12 @@ def register_page():
                               password_hash=form.password.data)
         db.session.add(user_to_create)
         db.session.commit()
+        global username
+        username = form.username.data
         return redirect(url_for('home_page'))
+
+    # if form.errors != {}:
+    #     for err_msg in form.errors.values():
+    #         flash(f'{err_msg}', category='error')
 
     return render_template('register.html', form=form)
