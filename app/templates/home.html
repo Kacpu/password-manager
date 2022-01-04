@@ -1,5 +1,16 @@
 {% extends 'base.html' %}
 {%  block content %}
+<div class="text-center">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} py-1 my-2" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
     <table class="table table-hover mt-4">
       <thead >
         <tr>

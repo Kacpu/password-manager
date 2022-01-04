@@ -18,12 +18,14 @@
     <nav class="navbar navbar-expand-md bg-creamy nav-shadow">
       <div class="container-fluid">
         <span class="navbar-brand mb-0">Password Manager</span>
-        <div class="navbar-nav">
-          <span class="navbar-text me-3 text-creamy">
-            {{ username }}
-          </span>
-          <a class="logout nav-link px-0" href="#">Logout</a>
-        </div>
+        {% if current_user.is_authenticated %}
+          <div class="navbar-nav">
+            <span class="navbar-text me-3 text-creamy">
+              {{ current_user.username }}
+            </span>
+            <a class="logout nav-link px-0" href="{{ url_for('logout_page') }}">Logout</a>
+          </div>
+        {% endif %}
       </div>
     </nav>
 
