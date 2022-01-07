@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{%  block content %}
+    <div class="container">
+        <form method="post" class="add-form" novalidate>
+            {{ form.hidden_tag() }}
+            <h1 class="h3 mb-3 text-center fw-normal">
+                Add password to service
+            </h1>
+            <div class="mb-3">
+                {{ form.service_name.label(class="form-label") }}
+                {% if form.is_submitted() %}
+                    {% if form.service_name.errors %}
+                        {{ form.service_name(class='form-control is-invalid') }}
+                        <div class="invalid-feedback">
+                            {% for error in form.service_name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else  %}
+                        {{ form.service_name(class='form-control is-valid') }}
+                    {% endif %}
+                {% else  %}
+                    {{ form.service_name(class='form-control') }}
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {% if form.is_submitted() %}
+                    {% if form.password.errors %}
+                        {{ form.password(class='form-control is-invalid') }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else  %}
+                        {{ form.password(class='form-control') }}
+                    {% endif %}
+                {% else  %}
+                    {{ form.password(class='form-control') }}
+                {% endif %}
+            </div>
+            <div class="my-4 d-flex justify-content-center">
+                {{ form.submit(class='btn btn-primary bg-confirm me-3') }}
+                <a class="btn btn-primary bg-cancel" href="{{ url_for('home_page') }}" role="button">Cancel</a>
+            </div>
+        </form>
+    </div>
+{%  endblock %}

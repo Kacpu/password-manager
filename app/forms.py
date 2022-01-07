@@ -26,3 +26,15 @@ class LoginForm(FlaskForm):
     username = StringField(label='Username', validators=[DataRequired()])
     password = PasswordField(label='Password', validators=[DataRequired()])
     submit = SubmitField(label='Sign in')
+
+
+class AddServiceForm(FlaskForm):
+    def validate_service_name(self, service_name_to_check):
+        service = User.query.filter_by(username=service_name_to_check.data).first()
+        if service:
+            raise ValidationError('Given service already exists!')
+
+    service_name = StringField(label='Service name', validators=[Length(max=50), DataRequired()])
+    password = PasswordField(label='Password', validators=[DataRequired()])
+    submit = SubmitField(label='Add service')
+

@@ -1,7 +1,7 @@
 from app import app
 from flask import render_template, redirect, url_for, flash
 from app.models import Service, User
-from app.forms import RegisterForm, LoginForm
+from app.forms import RegisterForm, LoginForm, AddServiceForm
 from app import db
 from flask_login import login_user, logout_user, login_required
 
@@ -53,3 +53,17 @@ def login_page():
 def logout_page():
     logout_user()
     return redirect(url_for('login_page'))
+
+
+@app.route('/add-service', methods=['GET', 'POST'])
+@login_required
+def add_service():
+    form = AddServiceForm()
+    if form.validate_on_submit():
+        service_to_create = Service(name=form.service_name.data,
+                                    password_hash=form.password.data)
+        db.session.add(service_to_create)
+        db.session.commit()
+        flash('Service added successfully!', category='success')
+        return redirect(url_for('home_page'))
+    return render_template('add_service.html', form=form)

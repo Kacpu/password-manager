@@ -2,11 +2,13 @@
     --main: #D7CAC5;
     --light-main: #F0E9E9;
     --text-main: #000000;
-    --btn-primary: #BFA5A5;
+    --btn-primary: #c7b2b2;
     --btn-primary-hover: #9f8585;
-    --table: #BCB5B5;
+    --table: #e1dada;
     --confirm: #B4B596;
     --confirm-hover: #c5c6a5;
+    --cancel: #ce6c6c;
+    --cancel-hover: #d97c7c;
 }
 
 .bg-confirm.btn-primary {
@@ -17,13 +19,25 @@
     background: var(--confirm-hover);
 }
 
+.bg-cancel.btn-primary {
+    background: var(--cancel);
+}
+
+.bg-cancel.btn-primary:hover {
+    background: var(--cancel-hover);
+}
+
 .bg-creamy {
     background: var(--main);
     color: var(--text-main);
 }
 
+.bg-main {
+    background-color: var(--main);
+}
+
 .border-color-primary {
-    border-color: #ded2d2 !important;
+    border-color: var(--table) !important;
 }
 
 .bg-light-creamy {
@@ -67,7 +81,7 @@
     border-top: 2px solid var(--table);
 }
 
-.register-form, .login-form {
+.register-form, .login-form, .add-form {
     margin-top: 40px;
     margin-bottom: 40px;
     padding-left: 200px;
@@ -91,6 +105,14 @@
     border-color: var(--confirm);
     color: var(--text-main);
     box-shadow: none;
+}
+
+.table>:not(caption)>*>:first-child {
+    padding-left: 20px;
+}
+
+.table>:not(caption)>*>* {
+    vertical-align: middle;
 }
 
 
