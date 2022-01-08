@@ -8,23 +8,27 @@
     --confirm: #B4B596;
     --confirm-hover: #c5c6a5;
     --cancel: #ce6c6c;
-    --cancel-hover: #d97c7c;
+    --cancel-hover: #dc8181;
 }
 
-.bg-confirm.btn-primary {
+.bg-confirm.btn-primary, .bg-confirm.btn-primary:focus {
     background: var(--confirm);
+    border-color: var(--confirm);
 }
 
-.bg-confirm.btn-primary:hover {
+.bg-confirm.btn-primary:hover, .bg-confirm.btn-primary:active {
     background: var(--confirm-hover);
+    border-color: var(--confirm-hover);
 }
 
-.bg-cancel.btn-primary {
+.bg-cancel.btn-primary, .bg-cancel.btn-primary:focus {
     background: var(--cancel);
+    border-color: var(--cancel);
 }
 
-.bg-cancel.btn-primary:hover {
+.bg-cancel.btn-primary:hover, .bg-cancel.btn-primary:active {
     background: var(--cancel-hover);
+    border-color: var(--cancel-hover);
 }
 
 .bg-creamy {
@@ -64,18 +68,21 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
-.btn-primary {
+.btn-primary, .btn-primary:focus {
     background: var(--btn-primary);
-    border: none;
-    color: var(--text-main);
-}
-
-.btn-primary:hover, .btn-primary:focus {
-    background: var(--btn-primary-hover);
-    border: none;
+    border-color: var(--btn-primary);
     color: var(--text-main);
     box-shadow: none;
 }
+
+.btn-primary:hover, .btn-primary:active {
+    background: var(--btn-primary-hover);
+    border-color: var(--btn-primary-hover);
+    color: var(--text-main);
+    box-shadow: none;
+}
+
+
 
 .table>:not(:first-child) {
     border-top: 2px solid var(--table);
@@ -93,14 +100,14 @@
     background: #eabebe;
 }
 
-.btn-secondary {
+.btn-outline-confirm {
     background-color: rgb(0,0,0,0);
     border-color: var(--confirm);
     border-width: 2px;
     color: var(--text-main);
 }
 
-.btn-secondary:hover, .btn-secondary:focus {
+.btn-outline-confirm:hover, .btn-outline-confirm:focus {
     background: var(--confirm-hover);
     border-color: var(--confirm);
     color: var(--text-main);

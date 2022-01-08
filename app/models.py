@@ -26,10 +26,17 @@ class User(db.Model, UserMixin):
     def is_password_correct(self, password):
         return bcrypt.check_password_hash(self.password_hash, password)
 
+    def get_services(self):
+        services = []
+        for us in self.services:
+            services.append(us.service)
+        return services
+
 
 class Service(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(length=50), nullable=False, unique=True)
+    name = db.Column(db.String(length=50), nullable=False)
+    link = db.Column(db.String(length=100))
     password_hash = db.Column(db.String(length=60), nullable=False)
     users = db.relationship('UserService', backref='service', lazy=True)
 

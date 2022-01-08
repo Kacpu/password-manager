@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
-from app.models import User
+from app.models import User, Service
+from flask_login import current_user
 
 
 class RegisterForm(FlaskForm):
@@ -30,11 +31,27 @@ class LoginForm(FlaskForm):
 
 class AddServiceForm(FlaskForm):
     def validate_service_name(self, service_name_to_check):
-        service = User.query.filter_by(username=service_name_to_check.data).first()
-        if service:
-            raise ValidationError('Given service already exists!')
+        print(current_user.id)
+        for service in current_user.get_services():
+            if service.name == service_name_to_check.data:
+                raise ValidationError('Given service already exists!')
 
     service_name = StringField(label='Service name', validators=[Length(max=50), DataRequired()])
     password = PasswordField(label='Password', validators=[DataRequired()])
     submit = SubmitField(label='Add service')
+
+
+class UpdateServiceForm(FlaskForm):
+    def __init__(self, exist_service_name, **kwargs):
+        super().__init__(**kwargs)
+        self.exist_service_name = exist_service_name
+
+    def validate_service_name(self, update_service_name):
+        for service in current_user.get_services():
+            if service.name != self.exist_service_name and service.name == update_service_name.data:
+                raise ValidationError('Given service already exists!')
+
+    service_name = StringField(label='Service name', validators=[Length(max=50), DataRequired()])
+    password = PasswordField(label='Password', validators=[DataRequired()])
+    submit = SubmitField(label='Update')
 

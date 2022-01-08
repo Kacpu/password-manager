@@ -1,16 +1,16 @@
 from app import app
-from flask import render_template, redirect, url_for, flash
-from app.models import Service, User
-from app.forms import RegisterForm, LoginForm, AddServiceForm
+from flask import render_template, redirect, url_for, flash, request
+from app.models import Service, User, UserService
+from app.forms import RegisterForm, LoginForm, AddServiceForm, UpdateServiceForm
 from app import db
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 
 
 @app.route('/')
 @app.route('/home')
 @login_required
 def home_page():
-    services = Service.query.all()
+    services = current_user.get_services()
     return render_template('home.html', services=services)
 
 
@@ -55,7 +55,7 @@ def logout_page():
     return redirect(url_for('login_page'))
 
 
-@app.route('/add-service', methods=['GET', 'POST'])
+@app.route('/service/add', methods=['GET', 'POST'])
 @login_required
 def add_service():
     form = AddServiceForm()
@@ -64,6 +64,53 @@ def add_service():
                                     password_hash=form.password.data)
         db.session.add(service_to_create)
         db.session.commit()
-        flash('Service added successfully!', category='success')
+        user_service = UserService(user_id=current_user.id, service_id=service_to_create.id)
+        db.session.add(user_service)
+        db.session.commit()
+        flash('Service has been added successfully!', category='success')
         return redirect(url_for('home_page'))
-    return render_template('add_service.html', form=form)
+    return render_template('add_service.html', form=form, legend='Add password to service')
+
+
+@app.route('/service/<int:service_id>/update', methods=['GET', 'POST'])
+@login_required
+def update_service(service_id):
+    service = Service.query.get(service_id)
+    if not check_service(service):
+        return redirect(url_for('home_page'))
+    form = UpdateServiceForm(service.name)
+    if request.method == 'GET':
+        form.service_name.data = service.name
+        form.password.data = service.password_hash
+        return render_template('add_service.html', form=form, legend='Update service')
+    if form.validate_on_submit():
+        service.name = form.service_name.data
+        service.password_hash = form.password.data
+        db.session.commit()
+        flash(f'Service has been updated successfully!', category='success')
+        return redirect(url_for('home_page'))
+    return render_template('add_service.html', form=form, legend='Update service')
+
+
+@app.route('/service/<int:service_id>/delete', methods=['Post'])
+@login_required
+def delete_service(service_id):
+    service = Service.query.get(service_id)
+    if not check_service(service):
+        return redirect(url_for('home_page'))
+    us = UserService.query.get([current_user.id, service.id])
+    db.session.delete(us)
+    db.session.delete(service)
+    db.session.commit()
+    flash(f'Service {service.name} has been deleted successfully!', category='success')
+    return redirect(url_for('home_page'))
+
+
+def check_service(service):
+    if not service:
+        flash('Service does not exist!', category='danger')
+        return False
+    if not UserService.query.get([current_user.id, service.id]):
+        flash('Access denied!', category='danger')
+        return False
+    return True
