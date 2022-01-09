@@ -11,6 +11,24 @@
     --cancel-hover: #dc8181;
 }
 
+body {
+    padding-top: 50px!important;
+}
+
+.permissions-container {
+    margin-right: 20%;
+    margin-left: 20%;
+    margin-top: 40px;
+}
+
+.fixed-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    top: 400px;
+    width: 30%;
+}
+
 .bg-confirm.btn-primary, .bg-confirm.btn-primary:focus {
     background: var(--confirm);
     border-color: var(--confirm);
@@ -82,8 +100,6 @@
     box-shadow: none;
 }
 
-
-
 .table>:not(:first-child) {
     border-top: 2px solid var(--table);
 }
@@ -119,10 +135,33 @@
 }
 
 .table>:not(caption)>*>* {
+    padding-right: 50px;
+}
+
+.table>:not(caption)>*>:last-child {
+    padding-right: 20px;
+}
+
+.table>:not(caption)>*>:last-child {
+}
+
+.table>:not(caption)>*>* {
     vertical-align: middle;
 }
 
+table.table-fit {
+    width: auto !important;
+    table-layout: auto !important;
+}
+table.table-fit thead th, table.table-fit tfoot th {
+    width: auto !important;
+}
+table.table-fit tbody td, table.table-fit tfoot td {
+    width: auto !important;
+}
 
+.modal {
+}
 
 
 

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="text-center">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} py-1 my-2" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
+<div class="permissions-container">
+    <h1 class="h4 mb-4">Users with access to password to service {{ service.name }}</h1>
+    {% if service.users|length == 0 %}
+    <p>This service is private.</p>
+    {% endif %}
+    <ul class="list-group mb-4">
+        {% for us in service.users %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ us.user.username }}
+            <form action="{{ url_for('delete_permission', user_id=us.user.id, service_id=service.id) }}" method="POST">
+                <input type="submit" class="btn btn-sm btn-outline-danger bg-cancel" value="Remove access">
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    <!--    <button class="btn btn-primary btn-sm bg-confirm" data-bs-toggle="modal" data-bs-target="#addPermissionModal">-->
+    <!--        Add access to new user-->
+    <!--    </button>-->
+    <a class='btn btn-primary btn-sm bg-confirm' href="{{ url_for('add_permission', service_id=service.id) }}"
+       role="button">
+        Add access to new user
+    </a>
+    <a class="btn btn-outline-secondary btn-sm bg-cancel" href="{{ url_for('home_page') }}" role="button">Close</a>
+    {% if add_permission %}
+    <form method="post" class="" novalidate>
+        {{ form.hidden_tag() }}
+        <h1 class="h5 mb-3 fw-normal mt-4">
+            Give username
+        </h1>
+        <div class="mb-3">
+            {{ form.username.label(class="form-label") }}
+            {% if form.username.errors %}
+            {{ form.username(class='form-control is-invalid') }}
+            <div class="invalid-feedback">
+                {% for error in form.username.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.username(class='form-control') }}
+            {% endif %}
+        </div>
+        <div class="my-4">
+            {{ form.submit(class='btn btn-sm btn-primary bg-confirm me-1') }}
+            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('permissions_page', service_id=service.id) }}" role="button">Cancel</a>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{%  endblock %}

@@ -11,7 +11,7 @@
     {% endif %}
     {% endwith %}
 </div>
-<div class="m-4">
+<div class="m-4 content-container">
     <div class="row">
         <div class="col-8">
             <h2 class="h4 mb-3">
@@ -19,40 +19,66 @@
             </h2>
             <a class='btn btn-primary btn-sm mb-4 bg-confirm' href="{{ url_for('add_service') }}" role="button">Add new
                 service password</a>
-            <div class="bg-main p-0">
-                <table class="table table-hover border-color-primary gx-6">
-                    <thead class="">
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Service</th>
-                        <th scope="col">Password</th>
-                        <th scope="col"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for service in services %}
-                    {% include 'includes/service_modals.html' %}
-                    <tr>
-                        <td>{{ service.id }}</td>
-                        <td>{{ service.name }}</td>
-                        <td>{{ service.password_hash }}</td>
-                        <td>
-                            <a class='btn btn-primary btn-sm' href="{{ url_for('update_service', service_id=service.id) }}" role="button">
-                                Edit
-                            </a>
-                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal-{{ service.id }}">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            <table class="table table-hover border-color-primary table-fit bg-main">
+                <thead class="">
+                <tr>
+                    <th class="fit" scope="col">Service name</th>
+                    <th class="fit" scope="col">Password</th>
+                    <th class="fit" scope="col">Status</th>
+                    <th class="fit" scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for service in admin_services %}
+                {% include 'includes/service_modals.html' %}
+                <tr>
+                    <td class="fit">{{ service.name }}</td>
+                    <td class="fit">{{ service.password_hash }}</td>
+                    <td class="fit">{{ service.status }}</td>
+                    <td>
+                        <a class='btn btn-primary btn-sm' href="{{ url_for('permissions_page', service_id=service.id) }}"
+                           role="button">
+                            Manage access
+                        </a>
+                    </td>
+                    <td class="fit">
+                        <a class='btn btn-primary btn-sm' href="{{ url_for('update_service', service_id=service.id) }}"
+                           role="button">
+                            Edit
+                        </a>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal-{{ service.id }}">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <br>
+            <h2 class="h4 mb-3">
+                Provided passwords
+            </h2>
+            <table class="table table-hover border-color-primary table-fit bg-main">
+                <thead class="">
+                <tr>
+                    <th class="fit" scope="col">Service name</th>
+                    <th class="fit" scope="col">Password</th>
+                    <th class="fit" scope="col">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for service in provided_services %}
+                {% include 'includes/service_modals.html' %}
+                <tr>
+                    <td class="fit">{{ service.name }}</td>
+                    <td class="fit">{{ service.password_hash }}</td>
+                    <td class="fit">{{ service.status }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
-        <div class="col"></div>
     </div>
 </div>
-
-
 {%  endblock %}
