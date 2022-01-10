@@ -127,7 +127,6 @@ def add_permission(service_id):
     service = Service.query.get(service_id)
     form = AddPermissionForm(service_id)
     if form.validate_on_submit():
-        # service.status = "Shared"
         user = User.query.filter_by(username=form.username.data).first()
         permission = UserService(user_id=user.id, service_id=service.id)
         db.session.add(permission)
@@ -155,8 +154,9 @@ def delete_permission(user_id, service_id):
 @app.route('/services/<int:service_id>/show-password')
 @login_required
 def show_password(service_id):
-    response_data = jsonify({'password': 'henlo'})
-    resp = make_response(response_data, 201)
+    service = Service.query.get(service_id)
+    response_data = jsonify({'password': service.password_hash})
+    resp = make_response(response_data, 200)
     return resp
 
 
@@ -182,6 +182,7 @@ def check_permission(permission):
 
 @app.context_processor
 def example():
-    def get_sth():
-        return 'henlo'
+    def get_sth(sid):
+        service = Service.query.get(sid)
+        return service.password_hash
     return dict(myf=get_sth)
