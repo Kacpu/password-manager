@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from app.models import User, Service, UserService
 from flask_login import current_user
@@ -72,3 +72,8 @@ class AddPermissionForm(FlaskForm):
 
     username = StringField(label='Username', validators=[Length(max=50), DataRequired()])
     submit = SubmitField(label='Add permission')
+
+
+class ShowPasswordForm(FlaskForm):
+    password = PasswordField('password', validators=[DataRequired()], id='password')
+    show_password = SubmitField(label='Show password', id='check')

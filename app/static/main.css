@@ -163,7 +163,29 @@ table.table-fit tbody td, table.table-fit tfoot td {
 .modal {
 }
 
+input.password-input, input.password-input:focus, input.password-input:hover {
+    background-color: transparent;
+    border: none;
+    flex: 1;
+    width: 80px;
+    box-shadow: none;
+    outline: none;
+}
 
+input.password-input:disabled {
+    color: var(--text-main);
+}
+
+.password-container {
+    align-items: center;
+    display: flex;
+    flex: 1;
+}
+
+.show-password {
+    background: transparent;
+    border: none;
+}
 
 
 

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+{% include 'includes/password_toggle.html' %}
 <div class="text-center">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -24,6 +25,7 @@
                 <tr>
                     <th class="fit" scope="col">Service name</th>
                     <th class="fit" scope="col">Password</th>
+                    <th scope="col"></th>
                     <th class="fit" scope="col">Status</th>
                     <th class="fit" scope="col"></th>
                 </tr>
@@ -33,10 +35,32 @@
                 {% include 'includes/service_modals.html' %}
                 <tr>
                     <td class="fit">{{ service.name }}</td>
-                    <td class="fit">{{ service.password_hash }}</td>
+                    <td class="">
+                        <div class="password-container">
+                            <input id="password-{{ service.id }}" aria-label="password" class="password-input"
+                                   readonly type="password">
+                        </div>
+                        <script>
+                            get_password('{{ service.id }}');
+                        </script>
+                    </td>
+                    <td>
+                        <button class="show-password" type="button" onclick="toggle_password('{{ service.id }}')">
+                            <i id="togglePassword-{{ service.id }}" class="bi bi-eye-slash"></i>
+                        </button>
+                    </td>
+<!--                    <td>-->
+<!--                        {{ password_form.password(class="password-input") }}-->
+<!--                        {{ password_form.password }}-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        {{ password_form.show_password(class="btn btn-primary btn-sm") }}-->
+<!--                    </td>-->
                     <td class="fit">{{ service.status }}</td>
                     <td>
-                        <a class='btn btn-primary btn-sm' href="{{ url_for('permissions_page', service_id=service.id) }}"
+                        {{ myf() }}
+                        <a class='btn btn-primary btn-sm'
+                           href="{{ url_for('permissions_page', service_id=service.id) }}"
                            role="button">
                             Manage access
                         </a>
@@ -60,20 +84,33 @@
                 Provided passwords
             </h2>
             <table class="table table-hover border-color-primary table-fit bg-main">
-                <thead class="">
+                <thead>
                 <tr>
-                    <th class="fit" scope="col">Service name</th>
-                    <th class="fit" scope="col">Password</th>
-                    <th class="fit" scope="col">Status</th>
+                    <th scope="col">Service name</th>
+                    <th scope="col">Password</th>
+                    <th scope="col">Owner</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for service in provided_services %}
                 {% include 'includes/service_modals.html' %}
                 <tr>
-                    <td class="fit">{{ service.name }}</td>
-                    <td class="fit">{{ service.password_hash }}</td>
-                    <td class="fit">{{ service.status }}</td>
+                    <td>{{ service.name }}</td>
+                    <td class="">
+                        <div class="password-container">
+                            <input id="password-{{ service.id }}" aria-label="password" class="password-input"
+                                   readonly type="password">
+                        </div>
+                        <script>
+                            get_password('{{ service.id }}');
+                        </script>
+                    </td>
+                    <td>
+                        <button class="show-password" type="button" onclick="toggle_password('{{ service.id }}')">
+                            <i id="togglePassword-{{ service.id }}" class="bi bi-eye-slash"></i>
+                        </button>
+                    </td>
+                    <td>{{ service.admin.username }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -81,4 +118,5 @@
         </div>
     </div>
 </div>
+
 {%  endblock %}

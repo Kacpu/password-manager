@@ -1,7 +1,7 @@
 from app import app
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, jsonify, make_response
 from app.models import Service, User, UserService
-from app.forms import RegisterForm, LoginForm, AddServiceForm, UpdateServiceForm, AddPermissionForm
+from app.forms import RegisterForm, LoginForm, AddServiceForm, UpdateServiceForm, AddPermissionForm, ShowPasswordForm
 from app import db
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -12,7 +12,10 @@ from flask_login import login_user, logout_user, login_required, current_user
 def home_page():
     admin_services = current_user.admin_services
     provided_services = current_user.get_provided_services()
-    return render_template('home.html', admin_services=admin_services, provided_services=provided_services)
+    password_form = ShowPasswordForm()
+    password_form.password.data = 'fake'
+    return render_template('home.html', admin_services=admin_services, provided_services=provided_services,
+                           password_form=password_form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -85,6 +88,7 @@ def update_service(service_id):
     if request.method == 'GET':
         form.service_name.data = service.name
         form.password.data = service.password_hash
+        print(form.password)
         return render_template('edit_service.html', form=form, legend='Update service')
     if form.validate_on_submit():
         if form.service_name.data:
@@ -123,13 +127,12 @@ def add_permission(service_id):
     service = Service.query.get(service_id)
     form = AddPermissionForm(service_id)
     if form.validate_on_submit():
+        # service.status = "Shared"
         user = User.query.filter_by(username=form.username.data).first()
         permission = UserService(user_id=user.id, service_id=service.id)
         db.session.add(permission)
+        service.check_permissions_number()
         db.session.commit()
-        # user_service = UserService(user_id=current_user.id, service_id=service_to_create.id)
-        # db.session.add(user_service)
-        # db.session.commit()
         flash(f'Permission for user {user.username} has been added successfully!', category='success')
         return redirect(url_for('permissions_page', service_id=service_id))
     return render_template('permissions.html', form=form, service=service, add_permission=True)
@@ -143,9 +146,18 @@ def delete_permission(user_id, service_id):
     if not check_permission(permission):
         return redirect(url_for('home_page'))
     db.session.delete(permission)
+    permission.service.check_permissions_number()
     db.session.commit()
     flash(f'Permission to user {username} has been deleted successfully!', category='success')
     return redirect(url_for('permissions_page', service_id=service_id))
+
+
+@app.route('/services/<int:service_id>/show-password')
+@login_required
+def show_password(service_id):
+    response_data = jsonify({'password': 'henlo'})
+    resp = make_response(response_data, 201)
+    return resp
 
 
 def check_service(service):
@@ -166,3 +178,10 @@ def check_permission(permission):
         flash('Access denied!', category='danger')
         return False
     return True
+
+
+@app.context_processor
+def example():
+    def get_sth():
+        return 'henlo'
+    return dict(myf=get_sth)

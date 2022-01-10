@@ -43,6 +43,16 @@ class Service(db.Model):
     users = db.relationship('UserService', backref='service', lazy=True)
     admin_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
 
+    def check_permissions_number(self):
+        print(len(self.users))
+        if len(self.users) == 0:
+            self.status = "Private"
+        else:
+            self.status = "Shared"
+
+    def ret_pass(self):
+        return self.password_hash
+
 
 class UserService(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), primary_key=True)
