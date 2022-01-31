@@ -7,17 +7,6 @@
             <h1 class="h3 mb-3 text-center fw-normal">
                 Login
             </h1>
-            <div class="text-center">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} py-1 my-2" role="alert">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-            </div>
             <div class="mb-3">
                 {{ form.username.label(class="form-label") }}
                 {% if form.is_submitted() %}
@@ -54,6 +43,9 @@
             </div>
             <div class="my-4 d-flex justify-content-center">
                 {{ form.submit(class='btn btn-primary bg-confirm') }}
+            </div>
+            <div class="text-muted text-center mb-3">
+                <a href="{{ url_for('reset_password_request') }}" class="link-dark">Forgot password?</a>
             </div>
             <div class="text-center border-top pt-3 border-color-primary">
                 <h6 class="h6 mb-3 fw-normal">

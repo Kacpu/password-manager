@@ -3,6 +3,8 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, ValidationError
 from app.models import User, Service, UserService
 from flask_login import current_user
+import re
+from password_strength import PasswordPolicy, PasswordStats
 
 
 class RegisterForm(FlaskForm):
@@ -10,11 +12,31 @@ class RegisterForm(FlaskForm):
         user = User.query.filter_by(username=username_to_check.data).first()
         if user:
             raise ValidationError('Given username already exists!')
+        if has_invalid_characters(username_to_check.data):
+            raise ValidationError('Username must contain only letters, numbers or the underscore character!')
 
     def validate_email(self, email_to_check):
         user = User.query.filter_by(email_address=email_to_check.data).first()
         if user:
             raise ValidationError('Given email already exists!')
+
+    def validate_password(self, password_to_check):
+        reg_pass = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W|.*[_])(\S)*$"
+        if not re.search(reg_pass, password_to_check.data):
+            raise ValidationError('Password must contain at least one lowercase letter, one uppercase letter, '
+                                  'one number and one special character!')
+
+    @staticmethod
+    def check_password_strength(password):
+        if password != '':
+            stats = PasswordStats(password)
+            if stats.strength() <= 0.33:
+                return "Attention! The password you entered is weak!"
+            elif stats.strength() <= 0.66:
+                return "The password you entered is medium."
+            else:
+                return "The password you entered is strong."
+        return ''
 
     username = StringField(label='Username', validators=[Length(min=4, max=30), DataRequired()])
     email = StringField(label='Email address', validators=[Email(), DataRequired()])
@@ -74,6 +96,41 @@ class AddPermissionForm(FlaskForm):
     submit = SubmitField(label='Add permission')
 
 
+class RequestResetPasswordForm(FlaskForm):
+    def validate_email(self, email_to_check):
+        user = User.query.filter_by(email_address=email_to_check.data).first()
+        if user is None:
+            raise ValidationError('Account with that email does not exist!')
+
+    email = StringField(label='Email', validators=[Email(), DataRequired()])
+    submit = SubmitField(label='Reset password')
+
+
+class ResetPasswordForm(FlaskForm):
+    def validate_password(self, password_to_check):
+        reg_pass = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W|.*[_])(\S)*$"
+        if not re.search(reg_pass, password_to_check.data):
+            raise ValidationError('Password must contain at least one lowercase letter, one uppercase letter, '
+                                  'one number and one special character!')
+
+    password = PasswordField(label='Password', validators=[Length(min=8), DataRequired()])
+    confirm_password = PasswordField(label='Confirm password', validators=[EqualTo('password'), DataRequired()])
+    submit = SubmitField(label='Reset password')
+
+
 class ShowPasswordForm(FlaskForm):
     password = PasswordField('password', validators=[DataRequired()], id='password')
     show_password = SubmitField(label='Show password', id='check')
+
+
+def has_invalid_characters(data):
+    reg_word = "^\w+$"
+    reg_no_word = "^(?=.*\W)"
+
+    if re.search(reg_word, data):
+        if re.search(reg_no_word, data):
+            return True
+        else:
+            return False
+    else:
+        return True

@@ -189,5 +189,15 @@ input.password-input:disabled {
 
 }
 
+.pass-info {
+    align-items: center;
+    height: 10px;
+    display: flex;
+}
+
+.pass-info-text {
+    color: #d24949;
+}
+
 
 

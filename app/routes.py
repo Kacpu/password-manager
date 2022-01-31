@@ -1,9 +1,10 @@
-from app import app
+from app import app, db, mail
 from flask import render_template, redirect, url_for, flash, request, jsonify, make_response
 from app.models import Service, User, UserService
-from app.forms import RegisterForm, LoginForm, AddServiceForm, UpdateServiceForm, AddPermissionForm, ShowPasswordForm
-from app import db
+from app.forms import RegisterForm, LoginForm, AddServiceForm, UpdateServiceForm, AddPermissionForm, ShowPasswordForm, \
+    RequestResetPasswordForm, ResetPasswordForm
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_mail import Message
 
 
 @app.route('/')
@@ -20,7 +21,12 @@ def home_page():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
+    if current_user.is_authenticated:
+        return redirect(url_for('home_page'))
     form = RegisterForm()
+    # password_strength = ''
+    # if form.is_submitted():
+    #     password_strength = form.check_password_strength()
     if form.validate_on_submit():
         user_to_create = User(username=form.username.data,
                               email_address=form.email.data,
@@ -40,6 +46,8 @@ def register_page():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
+    if current_user.is_authenticated:
+        return redirect(url_for('home_page'))
     form = LoginForm()
     if form.validate_on_submit():
         attempted_user = User.query.filter_by(username=form.username.data).first()
@@ -118,6 +126,8 @@ def delete_service(service_id):
 @login_required
 def permissions_page(service_id):
     service = Service.query.get(service_id)
+    if not check_service(service):
+        return redirect(url_for('home_page'))
     return render_template('permissions.html', service=service)
 
 
@@ -125,6 +135,8 @@ def permissions_page(service_id):
 @login_required
 def add_permission(service_id):
     service = Service.query.get(service_id)
+    if not check_service(service):
+        return redirect(url_for('home_page'))
     form = AddPermissionForm(service_id)
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -155,9 +167,74 @@ def delete_permission(user_id, service_id):
 @login_required
 def show_password(service_id):
     service = Service.query.get(service_id)
-    response_data = jsonify({'password': service.password_hash})
-    resp = make_response(response_data, 200)
-    return resp
+    if not service:
+        flash('Service does not exist!', category='danger')
+        return redirect(url_for('home_page'))
+    if service.admin_id == current_user.id:
+        response_data = jsonify({'password': service.password_hash})
+        resp = make_response(response_data, 200)
+        return resp
+    for permission in service.users:
+        if permission.user_id == current_user.id:
+            response_data = jsonify({'password': service.password_hash})
+            resp = make_response(response_data, 200)
+            return resp
+    flash('Access denied!', category='danger')
+    return redirect(url_for('home_page'))
+
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request', sender='pass_manager_byKT@gmail.com', recipients=[user.email_address])
+    msg.body = f'''If you did not request for email reset ignore this email!
+    
+To reset your password click on the following link:
+    
+{url_for('reset_password', token=token, _external=True)}
+'''
+    mail.send(msg)
+
+
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home_page'))
+    form = RequestResetPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email_address=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent to reset password.', 'info')
+        redirect(url_for('login_page'))
+    return render_template('reset_password_request.html', form=form)
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home_page'))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash("That token is invalid or expired.", "warning")
+        return redirect(url_for("reset_password_request"))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.password = form.password.data
+        db.session.commit()
+        flash('Your password has been updated!', category='success')
+        return redirect(url_for('login_page'))
+    return render_template('reset_password.html', form=form)
+
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        current_user.password = form.password.data
+        db.session.commit()
+        flash('Your password has been updated!', category='success')
+        return redirect(url_for('home_page'))
+    return render_template('reset_password.html', form=form)
 
 
 def check_service(service):
@@ -185,4 +262,13 @@ def example():
     def get_sth(sid):
         service = Service.query.get(sid)
         return service.password_hash
+
     return dict(myf=get_sth)
+
+
+@app.route('/get_pass_str', methods=['POST'])
+def pass_str():
+    password = request.json['password']
+    response_data = jsonify({'str_pass': RegisterForm.check_password_strength(password)})
+    resp = make_response(response_data, 200)
+    return resp
