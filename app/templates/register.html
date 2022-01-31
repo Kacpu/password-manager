@@ -57,10 +57,7 @@
                 {% else  %}
                     {{ form.password(class='form-control') }}
                 {% endif %}
-                {% if password_strength != '' %}
-                <div id="pass_str" class="pass-info-text mt-1">
-                </div>
-                {% endif %}
+                <div id="pass_str" class="pass-info-text mt-1"></div>
             </div>
             <div class="mb-3">
                 {{ form.confirm_password.label(class="form-label") }}
@@ -91,38 +88,7 @@
         </form>
     </div>
 
-<script>
-    let password = document.getElementById('password')
-    let pass_str = document.getElementById('pass_str')
-    password.addEventListener("input", () => {
-        fetch(`/get_pass_str`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({'password': password.value}),
-            })
-             .then(response => response.json())
-             .then(result => {
-                 if(result.str_pass === ''){
-                    pass_str.innerText = ''
-                 } else {
-                     pass_str.innerText = "Password strength: " + result.str_pass
-                 }
-
-                 if(result.str_pass === "The password you entered is strong."){
-                     pass_str.style.color = "green"
-                 } else if (result.str_pass === "The password you entered is medium."){
-                     pass_str.style.color = "#D98A17FF"
-                 } else {
-                     pass_str.style.color = "#d24949"
-                 }
-             })
-             .catch(error => {
-              console.log('Error:', error);
-             })
-    });
-</script>
+{% include 'includes/password_strength.html' %}
 
 {%  endblock %}
 

@@ -140,6 +140,23 @@ class ResetPasswordForm(FlaskForm):
     submit = SubmitField(label='Reset password')
 
 
+class ChangePasswordForm(FlaskForm):
+    def validate_actual_password(self, actual_password_to_check):
+        if not current_user.is_password_correct(password=actual_password_to_check.data):
+            raise ValidationError('Invalid password. You must enter your current password to change it.')
+
+    def validate_password(self, password_to_check):
+        reg_pass = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W|.*[_])(\S)*$"
+        if not re.search(reg_pass, password_to_check.data):
+            raise ValidationError('Password must contain at least one lowercase letter, one uppercase letter, '
+                                  'one number and one special character!')
+
+    actual_password = PasswordField(label='Actual password', validators=[DataRequired()])
+    password = PasswordField(label=' New password', validators=[Length(min=8), DataRequired()])
+    confirm_password = PasswordField(label='Confirm password', validators=[EqualTo('password'), DataRequired()])
+    submit = SubmitField(label='Reset password')
+
+
 class ShowServicePasswordForm(FlaskForm):
     pin_code = StringField(label='Pin Code')
     submit = SubmitField(label='Show password', id='check')

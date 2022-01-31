@@ -3,6 +3,7 @@ from app import bcrypt
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from app.symmetric_encryption import encrypt, decrypt
+from hashlib import sha256
 
 
 @login_manager.user_loader
@@ -37,10 +38,12 @@ class User(db.Model, UserMixin):
 
     @password.setter
     def password(self, password):
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        hash_mix = sha256(password.encode('utf-8') + app.secret_key.encode('utf-8')).hexdigest()
+        self.password_hash = bcrypt.generate_password_hash(hash_mix, 14).decode('utf-8')
 
     def is_password_correct(self, password):
-        return bcrypt.check_password_hash(self.password_hash, password)
+        hash_mix = sha256(password.encode('utf-8') + app.secret_key.encode('utf-8')).hexdigest()
+        return bcrypt.check_password_hash(self.password_hash, hash_mix)
 
     def get_provided_services(self):
         services = []

@@ -1,17 +1,18 @@
 from app import app, db, mail
-from flask import render_template, redirect, url_for, flash, request, jsonify, make_response
+from flask import render_template, redirect, url_for, flash, request, jsonify, make_response, session
 from app.models import Service, User, UserService
 from app.forms import RegisterForm, LoginForm, AddServiceForm, UpdateServiceForm, AddPermissionForm, \
-    ShowServicePasswordForm, \
-    RequestResetPasswordForm, ResetPasswordForm
+    ShowServicePasswordForm, RequestResetPasswordForm, ResetPasswordForm, ChangePasswordForm
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_mail import Message
+from datetime import datetime
 
 
 @app.route('/')
 @app.route('/home')
 @login_required
 def home_page():
+
     admin_services = current_user.admin_services
     provided_services = current_user.get_provided_services()
     password_form = ShowServicePasswordForm()
@@ -51,13 +52,35 @@ def login_page():
     if current_user.is_authenticated:
         return redirect(url_for('home_page'))
     form = LoginForm()
-    if form.validate_on_submit():
-        attempted_user = User.query.filter_by(username=form.username.data).first()
-        if attempted_user and attempted_user.is_password_correct(password=form.password.data):
-            login_user(attempted_user)
-            return redirect(url_for('home_page'))
-        else:
-            flash('Invalid username or password!', category='danger')
+    interval = None
+    # session.clear()
+    if session.get('login_attempt') is None:
+        session['login_attempt'] = 0
+    if session.get('login_attempt') >= 5:
+        session['login_attempt'] = 0
+        session['last_failed_attempt'] = datetime.now()
+    if session.get('last_failed_attempt') is not None:
+        interval = datetime.now() - session.get('last_failed_attempt').replace(tzinfo=None)
+        print(interval is not None and interval.seconds < 60)
+    if interval is not None and interval.seconds < 60:
+        print('czas:' + str(interval.seconds))
+        flash('Login attempts limit exceeded! Please wait some time to try again.', category='danger')
+        if form.is_submitted():
+            return render_template('login.html', form=form)
+    else:
+        if form.validate_on_submit():
+            attempted_user = User.query.filter_by(username=form.username.data).first()
+            if attempted_user and attempted_user.is_password_correct(password=form.password.data):
+                session['login_attempt'] = 0
+                login_user(attempted_user)
+                return redirect(url_for('home_page'))
+            else:
+                session['login_attempt'] += 1
+                print(session.get('login_attempt'))
+                flash('Invalid username or password!', category='danger')
+        elif form.is_submitted():
+            session['login_attempt'] += 1
+            print(session.get('login_attempt'))
 
     return render_template('login.html', form=form)
 
@@ -227,13 +250,13 @@ def reset_password(token):
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
-    form = ResetPasswordForm()
+    form = ChangePasswordForm()
     if form.validate_on_submit():
         current_user.password = form.password.data
         db.session.commit()
         flash('Your password has been updated!', category='success')
         return redirect(url_for('home_page'))
-    return render_template('reset_password.html', form=form)
+    return render_template('change_password.html', form=form)
 
 
 def check_service(service):
