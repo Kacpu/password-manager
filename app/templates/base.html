@@ -32,12 +32,13 @@
     </div>
 </nav>
 
-<div class="text-center">
+<div id="alert" class="text-center">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     {% for category, message in messages %}
-    <div class="alert alert-{{ category }} py-1 my-2" role="alert">
+    <div  class="alert alert-{{ category }} py-1 my-2 alert-dismissible" role="alert">
         {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="padding: 0.5rem 1rem"></button>
     </div>
     {% endfor %}
     {% endif %}

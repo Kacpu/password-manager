@@ -2,6 +2,7 @@ from app import db, login_manager, app
 from app import bcrypt
 from flask_login import UserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from app.symmetric_encryption import encrypt, decrypt
 
 
 @login_manager.user_loader
@@ -32,7 +33,7 @@ class User(db.Model, UserMixin):
 
     @property
     def password(self):
-        return self.password
+        return self.password_hash
 
     @password.setter
     def password(self, password):
@@ -53,9 +54,18 @@ class Service(db.Model):
     name = db.Column(db.String(length=50), nullable=False)
     link = db.Column(db.String(length=100))
     status = db.Column(db.String(length=20), nullable=False)
-    password_hash = db.Column(db.String(length=60), nullable=False)
+    encrypted_password = db.Column(db.String(length=100), nullable=False)
+    password_iv = db.Column(db.String(length=100), nullable=False)
     users = db.relationship('UserService', backref='service', lazy=True)
     admin_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
+
+    show_password = "fake"
+
+    def set_password(self, password, pin):
+        self.encrypted_password, self.password_iv = encrypt(pin, password)
+
+    def get_password(self, pin):
+        return decrypt(pin, self.password_iv, self.encrypted_password)
 
     def check_permissions_number(self):
         print(len(self.users))
@@ -63,9 +73,6 @@ class Service(db.Model):
             self.status = "Private"
         else:
             self.status = "Shared"
-
-    def ret_pass(self):
-        return self.password_hash
 
 
 class UserService(db.Model):

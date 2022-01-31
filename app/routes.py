@@ -1,7 +1,8 @@
 from app import app, db, mail
 from flask import render_template, redirect, url_for, flash, request, jsonify, make_response
 from app.models import Service, User, UserService
-from app.forms import RegisterForm, LoginForm, AddServiceForm, UpdateServiceForm, AddPermissionForm, ShowPasswordForm, \
+from app.forms import RegisterForm, LoginForm, AddServiceForm, UpdateServiceForm, AddPermissionForm, \
+    ShowServicePasswordForm, \
     RequestResetPasswordForm, ResetPasswordForm
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_mail import Message
@@ -13,8 +14,9 @@ from flask_mail import Message
 def home_page():
     admin_services = current_user.admin_services
     provided_services = current_user.get_provided_services()
-    password_form = ShowPasswordForm()
-    password_form.password.data = 'fake'
+    password_form = ShowServicePasswordForm()
+    # pin_code = password_form.pin_code.data
+    # password_form.password.data = 'fake'
     return render_template('home.html', admin_services=admin_services, provided_services=provided_services,
                            password_form=password_form)
 
@@ -73,14 +75,11 @@ def add_service():
     form = AddServiceForm()
     if form.validate_on_submit():
         service_to_create = Service(name=form.service_name.data,
-                                    password_hash=form.password.data,
                                     admin_id=current_user.id,
                                     status='Private')
+        service_to_create.set_password(form.password.data, form.pin_code.data)
         db.session.add(service_to_create)
         db.session.commit()
-        # user_service = UserService(user_id=current_user.id, service_id=service_to_create.id)
-        # db.session.add(user_service)
-        # db.session.commit()
         flash('Service has been added successfully!', category='success')
         return redirect(url_for('home_page'))
     return render_template('add_service.html', form=form)
@@ -95,14 +94,12 @@ def update_service(service_id):
     form = UpdateServiceForm(service.name)
     if request.method == 'GET':
         form.service_name.data = service.name
-        form.password.data = service.password_hash
-        print(form.password)
         return render_template('edit_service.html', form=form, legend='Update service')
     if form.validate_on_submit():
         if form.service_name.data:
             service.name = form.service_name.data
         if form.password.data:
-            service.password_hash = form.password.data
+            service.set_password(form.password.data, form.pin_code.data)
         db.session.commit()
         flash(f'Service has been updated successfully!', category='success')
         return redirect(url_for('home_page'))
@@ -163,24 +160,26 @@ def delete_permission(user_id, service_id):
     return redirect(url_for('permissions_page', service_id=service_id))
 
 
-@app.route('/services/<int:service_id>/show-password')
+def pass_resp(service):
+    password = service.get_password(request.json['pin_code'])
+    if password == 'fake':
+        return make_response({'error': "Invalid pin code"}, 400)
+    response_data = jsonify({'password': password})
+    return make_response(response_data, 200)
+
+
+@app.route('/services/<int:service_id>/show-password', methods=['Post'])
 @login_required
 def show_password(service_id):
     service = Service.query.get(service_id)
     if not service:
-        flash('Service does not exist!', category='danger')
-        return redirect(url_for('home_page'))
+        return make_response({'error': "Service does not exist"}, 400)
     if service.admin_id == current_user.id:
-        response_data = jsonify({'password': service.password_hash})
-        resp = make_response(response_data, 200)
-        return resp
+        return pass_resp(service)
     for permission in service.users:
         if permission.user_id == current_user.id:
-            response_data = jsonify({'password': service.password_hash})
-            resp = make_response(response_data, 200)
-            return resp
-    flash('Access denied!', category='danger')
-    return redirect(url_for('home_page'))
+            return pass_resp(service)
+    return make_response({'error': "Access denied"}, 400)
 
 
 def send_reset_email(user):
@@ -261,7 +260,7 @@ def check_permission(permission):
 def example():
     def get_sth(sid):
         service = Service.query.get(sid)
-        return service.password_hash
+        return service.encrypted_password
 
     return dict(myf=get_sth)
 

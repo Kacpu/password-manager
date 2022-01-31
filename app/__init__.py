@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_mail import Mail
 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///password_manager.db'
 app.config['SECRET_KEY'] = '316e3afd6308914772212d40'

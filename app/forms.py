@@ -57,7 +57,13 @@ class AddServiceForm(FlaskForm):
             if service.name == service_name_to_check.data:
                 raise ValidationError('Given service already exists!')
 
+    def validate_pin_code(self, pin_code_to_check):
+        reg_digit = "^\d+$"
+        if not re.search(reg_digit, pin_code_to_check.data):
+            raise ValidationError('Pin Code must contain only numbers!')
+
     service_name = StringField(label='Service name', validators=[Length(max=50), DataRequired()])
+    pin_code = StringField(label='Pin Code', validators=[Length(min=4, max=10), DataRequired()])
     password = PasswordField(label='Password', validators=[DataRequired()])
     submit = SubmitField(label='Add service')
 
@@ -72,7 +78,23 @@ class UpdateServiceForm(FlaskForm):
             if service.name != self.exist_service_name and service.name == update_service_name.data:
                 raise ValidationError('Given service already exists!')
 
+    def validate_pin_code(self, pin_code_to_check):
+        reg_digit = "^\d+$"
+        if pin_code_to_check.data != '' and self.password.data == '':
+            raise ValidationError('You can not change pin code. Give new pin code to the new password.')
+
+        if pin_code_to_check.data != '':
+            if not re.search(reg_digit, pin_code_to_check.data):
+                raise ValidationError('Pin Code must contain only numbers.')
+            if len(pin_code_to_check.data) < 4:
+                raise ValidationError('Pin Code must be at least 4 characters long.')
+
+    def validate_password(self, password_service_name):
+        if password_service_name.data != '' and self.pin_code.data == '':
+            raise ValidationError('You must give new pin code to the new password.')
+
     service_name = StringField(label='Service name', validators=[Length(max=50)])
+    pin_code = StringField(label='Pin Code', validators=[Length(max=10)])
     password = PasswordField(label='Password', validators=[])
     submit = SubmitField(label='Update')
 
@@ -118,9 +140,9 @@ class ResetPasswordForm(FlaskForm):
     submit = SubmitField(label='Reset password')
 
 
-class ShowPasswordForm(FlaskForm):
-    password = PasswordField('password', validators=[DataRequired()], id='password')
-    show_password = SubmitField(label='Show password', id='check')
+class ShowServicePasswordForm(FlaskForm):
+    pin_code = StringField(label='Pin Code')
+    submit = SubmitField(label='Show password', id='check')
 
 
 def has_invalid_characters(data):

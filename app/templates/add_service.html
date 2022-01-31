@@ -24,6 +24,23 @@
                 {% endif %}
             </div>
             <div class="mb-3">
+                {{ form.pin_code.label(class="form-label") }}
+                {% if form.is_submitted() %}
+                    {% if form.pin_code.errors %}
+                        {{ form.pin_code(class='form-control is-invalid') }}
+                        <div class="invalid-feedback">
+                            {% for error in form.pin_code.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else  %}
+                        {{ form.pin_code(class='form-control is-valid') }}
+                    {% endif %}
+                {% else  %}
+                    {{ form.pin_code(class='form-control') }}
+                {% endif %}
+            </div>
+            <div class="mb-3">
                 {{ form.password.label(class="form-label") }}
                 {% if form.is_submitted() %}
                     {% if form.password.errors %}

@@ -31,20 +31,20 @@
                                    readonly type="password">
                         </div>
                         <script>
-                            get_password('{{ service.id }}');
+                            set_password('{{ service.id }}', 'fake');
                         </script>
                     </td>
                     <td>
-                        <button class="show-password" type="button" onclick="toggle_password('{{ service.id }}')">
+                        <button id="showBtn-{{ service.id }}" class="show-password" type="button"
+                                data-bs-toggle="modal" data-bs-target="#showPasswordModal-{{ service.id }}"
+                                onclick="hide_password('{{ service.id }}')">
                             <i id="togglePassword-{{ service.id }}" class="bi bi-eye-slash"></i>
                         </button>
                     </td>
 <!--                    <td>-->
-<!--                        {{ password_form.password(class="password-input") }}-->
-<!--                        {{ password_form.password }}-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        {{ password_form.show_password(class="btn btn-primary btn-sm") }}-->
+<!--                        <button class="show-password" type="button" onclick="toggle_password('{{ service.id }}')">-->
+<!--                            <i id="togglePassword-{{ service.id }}" class="bi bi-eye-slash"></i>-->
+<!--                        </button>-->
 <!--                    </td>-->
                     <td class="fit">{{ service.status }}</td>
                     <td>
@@ -93,11 +93,13 @@
                                    readonly type="password">
                         </div>
                         <script>
-                            get_password('{{ service.id }}');
+                            set_password('{{ service.id }}', 'fake');
                         </script>
                     </td>
                     <td>
-                        <button class="show-password" type="button" onclick="toggle_password('{{ service.id }}')">
+                        <button id="showBtn-{{ service.id }}" class="show-password" type="button"
+                                data-bs-toggle="modal" data-bs-target="#showPasswordModal-{{ service.id }}"
+                                onclick="hide_password('{{ service.id }}')">
                             <i id="togglePassword-{{ service.id }}" class="bi bi-eye-slash"></i>
                         </button>
                     </td>

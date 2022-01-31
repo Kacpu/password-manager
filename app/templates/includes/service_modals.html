@@ -19,6 +19,51 @@
     </div>
 </div>
 
+<div class="modal fade" id="showPasswordModal-{{ service.id }}" tabindex="-1" aria-labelledby="deleteModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="showPasswordModalLabel">Show password to service {{ service.name }}?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+<!--            <form method="post" class="" novalidate>-->
+<!--                {{ password_form.hidden_tag() }}-->
+                <div class="modal-body">
+                    <h2 class="h6 mb-3 fw-normal">Give pin code to see the password</h2>
+                    <div class="mb-3">
+                        <label for="pin-{{ service.id }}" class="form-label">Pin Code</label>
+                        <input type="text" id="pin-{{ service.id }}" name="pin-{{ service.id }}" class="form-control">
+<!--                        {{ password_form.pin_code.label(class="form-label") }}-->
+<!--                        {% if password_form.pin_code.errors %}-->
+<!--                            {{ form.pin_code(class='form-control is-invalid') }}-->
+<!--                            <div class="invalid-feedback">-->
+<!--                                {% for error in form.pin_code.errors %}-->
+<!--                                    <span>{{ error }}</span>-->
+<!--                                {% endfor %}-->
+<!--                            </div>-->
+<!--                        {% else %}-->
+<!--                        {{ password_form.pin_code(class='form-control') }}-->
+<!--                        {% endif %}-->
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="toggle_password('{{ service.id }}')">Show password</button>
+<!--                        {{ password_form.submit(class='btn btn-success') }}-->
+                </div>
+<!--            </form>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>-->
+<!--                <form action="{{ url_for('delete_service', service_id=service.id) }}" method="POST">-->
+<!--                    <input type="submit" class="btn btn-primary bg-cancel" value="Delete">-->
+<!--                </form>-->
+<!--            </div>-->
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="manageAccessModal-{{ service.id }}" tabindex="-1" aria-labelledby="manageAccessModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
