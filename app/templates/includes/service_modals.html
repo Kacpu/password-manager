@@ -12,6 +12,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                 <form action="{{ url_for('delete_service', service_id=service.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <input type="submit" class="btn btn-primary bg-cancel" value="Delete">
                 </form>
             </div>
@@ -64,30 +65,29 @@
     </div>
 </div>
 
-<div class="modal fade" id="manageAccessModal-{{ service.id }}" tabindex="-1" aria-labelledby="manageAccessModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="manageAccessModalLabel">Manage access to your password to service {{
-                    service.name }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <h2 class="h6 mb-3">Admitted Users</h2>
-                <ul class="list-group">
-                    {% for us in service.users %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        {{ us.user.username }}
-                        <form action="{{ url_for('delete_permission', user_id=us.user.id, service_id=service.id) }}"
-                              method="POST">
-                            <input type="submit" class="btn btn-sm btn-outline-danger bg-cancel" value="Remove access">
-                        </form>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
+<!--<div class="modal fade" id="manageAccessModal-{{ service.id }}" tabindex="-1" aria-labelledby="manageAccessModalLabel"-->
+<!--     aria-hidden="true">-->
+<!--    <div class="modal-dialog modal-dialog-centered">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h5 class="modal-title" id="manageAccessModalLabel">Manage access to your password to service </h5>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+<!--                <h2 class="h6 mb-3">Admitted Users</h2>-->
+<!--                <ul class="list-group">-->
+<!--                    {% for us in service.users %}-->
+<!--                    <li class="list-group-item d-flex justify-content-between align-items-center">-->
+<!--                        {{ us.user.username }}-->
+<!--                        <form action="{{ url_for('delete_permission', user_id=us.user.id, service_id=service.id) }}"-->
+<!--                              method="POST">-->
+<!--                            <input type="submit" class="btn btn-sm btn-outline-danger bg-cancel" value="Remove access">-->
+<!--                        </form>-->
+<!--                    </li>-->
+<!--                    {% endfor %}-->
+<!--                </ul>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
 

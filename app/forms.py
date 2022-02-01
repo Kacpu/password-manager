@@ -125,7 +125,7 @@ class RequestResetPasswordForm(FlaskForm):
             raise ValidationError('Account with that email does not exist!')
 
     email = StringField(label='Email', validators=[Email(), DataRequired()])
-    submit = SubmitField(label='Reset password')
+    submit = SubmitField(label='Send email')
 
 
 class ResetPasswordForm(FlaskForm):

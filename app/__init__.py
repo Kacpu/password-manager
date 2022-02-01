@@ -5,6 +5,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_mail import Mail
+from flask_wtf.csrf import CSRFProtect
 
 
 app = Flask(__name__)
@@ -22,7 +23,7 @@ app.config['MAIL_USERNAME'] = os.environ.get('MAIL')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASS')
 app.config['MAIL_USE_TLS'] = True
 
-
 mail = Mail(app)
+csrf = CSRFProtect(app)
 
 from app import routes
