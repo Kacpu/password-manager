@@ -12,7 +12,6 @@ from datetime import datetime
 @app.route('/home')
 @login_required
 def home_page():
-
     admin_services = current_user.admin_services
     provided_services = current_user.get_provided_services()
     password_form = ShowServicePasswordForm()
