@@ -1,5 +1,5 @@
 # Password Manager
-Project made for Data Security classes. Its purpose was to learn about mechanisms and best practises for creating secure web apps. It includes authentication, secure password storage and sharing passwords with other users.
+Project made for Data Security course. Its purpose was to learn about mechanisms and best practises for creating secure web apps. It includes authentication, secure password storage and sharing passwords with other users.
 
 Security used:
 * hashing the user's password with sha256 followed by hashing with bcrypt,
